@@ -3,14 +3,14 @@
 
 int main(int argc, char *argv[])
 { 
-    AddressBookInfo addressbook; 
-    
+    AddressBookInfo addressbook;
+
     if( argc == 1)
     {
 	printf("only ./a.out is passed\n");
         addressbook.default_name = DEFAULT_NAME;
-        addressbook.fpdt = fopen(addressbook.default_name, "w");
-  	if(addressbook.fpdt == NULL)
+        addressbook.fp = fopen(addressbook.default_name, "w");
+  	if(addressbook.fp == NULL)
 	{
 	    printf("Error opening file\n");
 	    return e_failure;
@@ -41,6 +41,9 @@ int main(int argc, char *argv[])
 	return e_failure;
     }
 
+    addressbook.list = NULL;
+    addressbook.count = 0;
+
     int option;   
     do
     {
@@ -59,7 +62,10 @@ int main(int argc, char *argv[])
 		    return e_failure;
 		}
     	    case 1:
-		add_contact_menu();
+		if(add_contact_menu(&addressbook) == e_success)
+		{
+		    printf("Back\n");
+		}
     		break ;
     	    case 2:
 		add_search_menu();
@@ -74,8 +80,11 @@ int main(int argc, char *argv[])
 		add_list_menu();
 	       	break ;
      	    case 6:
-		save();
-   		break ;
+		if(save_files(&addressbook) == e_success)
+		{
+			printf("File Saved Successfully\n");
+		}
+		break ;
 	    default :
 		printf("Enter the valid Option\n");
     	}
@@ -84,10 +93,6 @@ int main(int argc, char *argv[])
     if( addressbook.fp != NULL)
     {
 	fclose(addressbook.fp);
-    }
-    if( addressbook.fpdt != NULL)
-    {
-    	fclose(addressbook.fpdt);
     }
     return e_success;
 }

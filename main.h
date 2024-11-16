@@ -9,7 +9,7 @@
 #define DEFAULT_NAME      "address_book.csv"
 #define NAME_LEN          32
 #define NUMBER_LEN        32
-#define EMAIL_ID_LEN      32
+#define EMAIL_ID_LEN      64
 
 // Enum for function statuses
 typedef enum
@@ -29,23 +29,22 @@ typedef struct
 // Structure for managing the address book
 typedef struct 
 {
-    FILE *fp;                  // File pointer for the CSV file
-    ContactInfo *list;         // Array of contact information
-    int count;                 // Number of contacts
+    FILE *fp;                					  // File pointer for the CSV file
+    ContactInfo *list;         				  // Array of contact information
+    int count;           				          // Number of contacts
 
-    char *default_name;        // Default file name
-    FILE *fpdt;                // Default file pointer
+    char *default_name;   				          // Default file name
 } AddressBookInfo;
 
 // Function declarations
-int menu();                    // Displays the main menu and returns the selected option
-int exit_menu();               // Handles the exit operation
-void add_contact_menu();       // Handles adding a new contact
-void add_search_menu();        // Handles searching for a contact
-void add_edit_menu();          // Handles editing a contact
-void add_delete_menu();        // Handles deleting a contact
-void add_list_menu();          // Handles listing all contacts
-int save();                    // Saves the contacts to a file
+int menu();                    				   // Displays the main menu and returns the selected option
+int exit_menu();               				   // Handles the exit operation
+int add_contact_menu(AddressBookInfo *addressbook);              // Handles adding a new contact
+void add_search_menu();     					   // Handles searching for a contact
+void add_edit_menu();      					   // Handles editing a contact
+void add_delete_menu();      					   // Handles deleting a contact
+void add_list_menu();        					   // Handles listing all contacts
+int save_files(AddressBookInfo *addressbook);       // Saves the contacts to a file
 
 #endif // MAIN_H
 
