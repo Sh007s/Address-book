@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 		}
     		break ;
     	    case 2:
-		add_search_menu();
+		if(add_search_menu(&addressbook) == e_success)
       		break ;
     	    case 3:
 		add_edit_menu();
