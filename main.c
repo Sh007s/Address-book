@@ -62,25 +62,25 @@ int main(int argc, char *argv[])
 		    return e_failure;
 		}
     	    case 1:
-		if(add_contact_menu(&addressbook) == e_success)
+		if(Add_Contact(&addressbook) == e_success)
 		{
 		    printf("Back\n");
 		}
     		break ;
     	    case 2:
-		if(add_search_menu(&addressbook) == e_success)
+		if(Search_Contact(&addressbook) == e_success)
       		break ;
     	    case 3:
-		add_edit_menu();
+		if(Edit_Contact(&addressbook) == e_success)
    		break ;
     	    case 4:
-		add_delete_menu();
+		if(Delete_Contact(&addressbook) == e_success)
     		break ;
 	    case 5:
-		add_list_menu();
+		if(List_Contact(&addressbook) == e_success)
 	       	break ;
      	    case 6:
-		if(save_files(&addressbook) == e_success)
+		if(Save_File(&addressbook) == e_success)
 		{
 			printf("File Saved Successfully\n");
 		}

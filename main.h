@@ -11,7 +11,7 @@
 #define NAME_LEN          32
 #define NUMBER_LEN        32
 #define EMAIL_ID_LEN      64
-#define MAX_RESULTS 100
+#define MAX_RESULTS       100
 
 // Enum for function statuses
 typedef enum
@@ -32,23 +32,22 @@ typedef struct
 // Structure for managing the address book
 typedef struct 
 {
-    FILE *fp;                					  // File pointer for the CSV file
-    ContactInfo *list;         				  // Array of contact information
-    int count;           				          // Number of contacts
+    FILE *fp;                			                        		   // File pointer for the CSV file
+    ContactInfo *list;         				                               // Array of contact information
+    int count;           				                                   // Number of contacts
 
-    char *default_name;   				          // Default file name
+    char *default_name;   	                           			           // Default file name
 } AddressBookInfo;
 
 // Function declarations
-int menu();                    				   // Displays the main menu and returns the selected option
-int exit_menu();               				   // Handles the exit operation
-int add_contact_menu(AddressBookInfo *addressbook);              // Handles adding a new contact
-int add_search_menu(AddressBookInfo *addressbook);     					   // Handles searching for a contact
-void add_edit_menu();      					   // Handles editing a contact
-void add_delete_menu();      					   // Handles deleting a contact
-void add_list_menu();        					   // Handles listing all contacts
-int save_files(AddressBookInfo *addressbook);       // Saves the contacts to a file
-//void dispaly_results(AddressBookInfo *addressbook,TEMP *temp)
+int menu();                    				                               // Displays the main menu and returns the selected option
+int exit_menu();               				                               // Handles the exit operation
+int Add_Contact(AddressBookInfo *addressbook);                             // Handles adding a new contact
+int Search_Contact(AddressBookInfo *addressbook);     					   // Handles searching for a contact
+int Edit_Contact(AddressBookInfo *addressbook);      					   // Handles editing a contact
+int Delete_Contact(AddressBookInfo *addressbook);      					   // Handles deleting a contact
+int List_Contact(AddressBookInfo *addressbook);        					   // Handles listing all contacts
+int Save_File(AddressBookInfo *addressbook);                               // Saves the contacts to a file
 
 #endif // MAIN_H
 
