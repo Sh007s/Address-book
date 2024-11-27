@@ -9,8 +9,7 @@ int menu()
     printf("########  Address Book ########\n");
     printf("########  Feature: \n");
 
-    printf("0.Exit \n1.Add Contact \n2.Search Contact \n3.Edit Contact \n4.Delete Contact \n");
-    printf("5.List Contact \n6.Save File\n");
+    printf("0.Exit \n1.Add Contact \n2.Search Contact \n3.Edit Contact \n4.Delete Contact \n5.List Contact \n6.Save File\n");
     printf("Plase Select an option : ");
 
     if (scanf("%d", &op) != 1)
@@ -715,7 +714,35 @@ int Delete_Contact(AddressBookInfo *addressbook)
 }
 int List_Contact(AddressBookInfo *addressbook)
 {
-    printf("Add List Menu\n");
+    if (addressbook->count == 0)
+    {
+        printf("Addresss Book is Empty.\n");
+        return -1;
+    }
+    printf("Contact List: \n");
+    for (int i = 0; i < addressbook->count; i++)
+    {
+        printf("Contact %d: \n", i + 1);
+        printf("Name %s\n", addressbook->list[i].name);
+        printf("Email ID:\n");
+        for (int j = 0; j < MAX_EMAIL_IDS; j++)
+        {
+            if (addressbook->list[i].email_addresses[j][0] != '\0')
+            {
+                printf("       %s\n", addressbook->list[i].email_addresses[j]);
+            }
+        }
+        printf("Phone Number:\n");
+        for (int k = 0; k < MAX_PHONE_NUMBERS; k++)
+        {
+            if (addressbook->list[i].phone_number[k][0] != '\0')
+            {
+                printf("       %s\n", addressbook->list[i].phone_number[k]);
+            }
+        }
+        printf("\n");
+    }
+    return 0;
 }
 
 int Save_File(AddressBookInfo *addressbook)
