@@ -19,7 +19,9 @@
 typedef enum
 {
     e_success = 0,
-    e_failure = 1
+    e_failure = 1,
+    e_invalid = -1
+
 } Status;
 
 // Structure for storing contact information

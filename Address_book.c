@@ -16,7 +16,7 @@ int menu()
     {
         while (getchar() != '\n')
             ;
-        return -1;
+        return e_invalid;
     }
     return op;
 }
@@ -351,7 +351,7 @@ int Search_Menu(ContactInfo *criteria)
         }
         return 1; // Return non-zero if valid search criteria were entered
     } while (op != 0);
-    return 0;
+    return e_success;
 }
 
 // Add Contact function
@@ -462,7 +462,6 @@ int Add_Contact(AddressBookInfo *addressbook)
                 addressbook->list[addressbook->count] = currentContact;
                 addressbook->count++;
                 // currentContact.Serial_No = addressbook->count + 1;
-                printf("Contact saved successfully.\n");
 
                 // Reset currentContact for the next entry
                 currentContact = (ContactInfo){0};
@@ -710,8 +709,78 @@ int Edit_Contact(AddressBookInfo *addressbook)
 
 int Delete_Contact(AddressBookInfo *addressbook)
 {
-    printf("Add Delete Menu\n");
+    if (addressbook->count == 0)
+    {
+        printf("No contacts available to delete.\n");
+        return -1;
+    }
+
+    printf("\n####### Address Book #######\n");
+    printf("########## Search Contact to Delete by ##########\n");
+
+    ContactInfo criteria = {0};       // Initialize search criteria
+    ContactInfo results[MAX_RESULTS]; // Array to hold search results
+    int result_count;
+
+    while (Search_Menu(&criteria))
+    {
+        result_count = Perform_Search(addressbook, &criteria, results, MAX_RESULTS);
+        if (result_count > 0)
+        {
+            printf("Search Results:\n");
+            display_results(results, result_count, &criteria); // Show results if any
+
+            // Ask user to select a contact from the results to delete
+            printf("Enter the result serial number to delete (1 to %d) or 0 to cancel: ", result_count);
+            int choice;
+            if (scanf("%d", &choice) != 1 || choice < 0 || choice > result_count)
+            {
+                printf("Invalid input. Operation canceled.\n");
+                return e_invalid;
+            }
+
+            if (choice == 0)
+            {
+                printf("Delete operation canceled.\n");
+                return e_success;
+            }
+
+            // Confirm deletion
+            printf("Are you sure you want to delete this contact? (y/n): ");
+            char confirmation;
+            scanf(" %c", &confirmation);
+            if (confirmation != 'y' && confirmation != 'Y')
+            {
+                printf("Delete operation canceled.\n");
+                return e_success;
+            }
+
+            // Find the actual index of the selected contact in the address book
+            int contact_index = results[choice - 1].Serial_No - 1;
+
+            // Perform deletion by shifting contacts
+            for (int i = contact_index; i < addressbook->count - 1; i++)
+            {
+                addressbook->list[i] = addressbook->list[i + 1]; // Shift contacts left
+            }
+
+            // Decrease the contact count
+            addressbook->count--;
+
+            return e_success;
+        }
+        else
+        {
+            printf("No contacts found matching the search criteria.\n");
+        }
+
+        // Reset criteria for the next search
+        memset(&criteria, 0, sizeof(criteria));
+    }
+
+    return e_success;
 }
+
 int List_Contact(AddressBookInfo *addressbook)
 {
     if (addressbook->count == 0)
@@ -798,6 +867,25 @@ int Save_File(AddressBookInfo *addressbook)
 
 int exit_menu()
 {
-    printf("Exiting the Address Book, Goodbye !!!\n");
-    exit(0);
+    char option;
+    printf("Enter 'N' to Ignore and 'Y' to Save: ");
+    if (scanf(" %c", &option) != 1)
+    {
+        printf("Invalid Input\n");
+        return -1;
+    }
+
+    if (option == 'Y' || option == 'y')
+    {
+        
+        return 1;
+    }
+    else if (option == 'n' || option == 'N')
+    {
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
 }

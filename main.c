@@ -58,18 +58,33 @@ int main(int argc, char *argv[])
 		{
 		case 0:
 		{
-			exit_menu();
+			int result = exit_menu();
+			if (result == 1)
+			{
+				printf("Exiting Date saved in address_book.csv\n");
+			}
+			else if (result == 0)
+			{
+				printf("Exiting. No changes saved. \n");
+			}
+			else if ( result == -1)
+			{
+				printf("Invalid option. Please enter 'N' or 'Y'. \n");
+			}
 			return e_failure;
 		}
 		case 1:
 			if (Add_Contact(&addressbook) == e_success)
 			{
-				printf("Back\n");
+                printf("Contact saved successfully.\n");
 			}
 			break;
 		case 2:
 			if (Search_Contact(&addressbook) == e_success)
-				break;
+			{
+				printf("Search function is succesfully\n");
+			}
+			break;
 		case 3:
 			if (Edit_Contact(&addressbook) != e_success)
 			{
@@ -78,9 +93,15 @@ int main(int argc, char *argv[])
 			break;
 		case 4:
 			if (Delete_Contact(&addressbook) == e_success)
+			{
+				printf("Contact deleted successfully.\n");
+			}
 				break;
 		case 5:
 			if (List_Contact(&addressbook) == e_success)
+			{
+				
+			}
 				break;
 		case 6:
 			if (Save_File(&addressbook) == e_success)
