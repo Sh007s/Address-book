@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 			{
 				printf("Exiting. No changes saved. \n");
 			}
-			else if ( result == -1)
+			else if (result == -1)
 			{
 				printf("Invalid option. Please enter 'N' or 'Y'. \n");
 			}
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 		case 1:
 			if (Add_Contact(&addressbook) == e_success)
 			{
-                printf("Contact saved successfully.\n");
+				printf("Contact saved successfully.\n");
 			}
 			break;
 		case 2:
@@ -96,13 +96,12 @@ int main(int argc, char *argv[])
 			{
 				printf("Contact deleted successfully.\n");
 			}
-				break;
+			break;
 		case 5:
 			if (List_Contact(&addressbook) == e_success)
 			{
-				
 			}
-				break;
+			break;
 		case 6:
 			if (Save_File(&addressbook) == e_success)
 			{
