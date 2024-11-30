@@ -14,7 +14,7 @@
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/AddressBook.git
+   git clone https://github.com/Sh007s/Address-book.git
 
 2. Compile the program:
     gcc main.c address_book.c -o address_book
