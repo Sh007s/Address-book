@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "main.h"
 
-//int Search_Menu(ContactInfo *criteria);
+// int Search_Menu(ContactInfo *criteria);
 
 int menu()
 {
@@ -221,34 +221,51 @@ void display_results(ContactInfo *results, int count, ContactInfo *temp)
     {
         printf("\n#### Search Results ####\n");
         printf("============================================================\n");
-        printf(": S.No : Name : Phone Nos : Email IDs :\n");
+        printf("%-5s %-30s %-15s %-40s\n", "S.No", "Name", "Phone No", "Email ID");
         printf("============================================================\n");
+
         for (int i = 0; i < filtered_count; i++)
         {
-            printf(": %-4d : %-10s : ", filtered_results[i].Serial_No, filtered_results[i].name);
+            // Print the first phone number and email ID on the same line as Name
+            printf("%-5d %-30s %-15s %-40s\n",
+                   filtered_results[i].Serial_No,
+                   filtered_results[i].name,
+                   filtered_results[i].phone_number[0],
+                   filtered_results[i].email_addresses[0]);
 
-            // Display all phone numbers
-            for (int j = 0; j < MAX_PHONE_NUMBERS; j++)
-            {
-                if (strlen(filtered_results[i].phone_number[j]) > 0)
-                {
-                    printf("%s ", filtered_results[i].phone_number[j]);
-                }
-            }
-            printf(": ");
+            // Print remaining phone numbers and email IDs
+            int max_rows = (MAX_PHONE_NUMBERS > MAX_EMAIL_IDS) ? MAX_PHONE_NUMBERS : MAX_EMAIL_IDS;
 
-            // Display all email addresses
-            for (int j = 0; j < MAX_EMAIL_IDS; j++)
+            for (int j = 1; j < max_rows; j++)
             {
-                if (strlen(filtered_results[i].email_addresses[j]) > 0)
+                printf("%-5s %-30s",
+                       "", // Empty S.No and Name columns for subsequent rows
+                       "");
+
+                if (j < MAX_PHONE_NUMBERS && strlen(filtered_results[i].phone_number[j]) > 0)
                 {
-                    printf("%s ", filtered_results[i].email_addresses[j]);
+                    printf("%-15s", filtered_results[i].phone_number[j]);
                 }
+                else
+                {
+                    printf("%-15s", ""); // Leave space if no phone number
+                }
+
+                if (j < MAX_EMAIL_IDS && strlen(filtered_results[i].email_addresses[j]) > 0)
+                {
+                    printf("%-40s", filtered_results[i].email_addresses[j]);
+                }
+                else
+                {
+                    printf("%-40s", ""); // Leave space if no email address
+                }
+
+                printf("\n"); // Move to the next line
             }
-            printf(":\n");
         }
+
         printf("============================================================\n");
-        printf("Press [q] to Cancel : ");
+        printf("Press [q] to Cancel: ");
 
         // Read quit character
         if (scanf(" %c", &quit) != 1)

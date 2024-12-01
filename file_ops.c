@@ -25,8 +25,7 @@ Status load_file(AddressBookInfo *address_book)
         address_book->fp = fopen(address_book->default_name, "w");
         if (address_book->fp == NULL)
         {
-            printf("Error: Unals
-            ble to create the file '%s'.\n", address_book->default_name);
+            printf("Error: Unable to create the file '%s'.\n", address_book->default_name);
             return e_failure;
         }
 
