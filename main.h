@@ -45,8 +45,8 @@ typedef struct
 } AddressBookInfo;
 
 // Function declarations
-int menu();                                       // Displays the main menu and returns the selected option
-Status exit_menu();                                  // Handles the exit operation
+int menu();                      // Displays the main menu and returns the selected option
+Status exit_menu(AddressBookInfo *addressbook);      // Handles the exit operation
 Status Add_Contact(AddressBookInfo *addressbook);    // Handles adding a new contact
 Status Search_Contact(AddressBookInfo *addressbook); // Handles searching for a contact
 Status Edit_Contact(AddressBookInfo *addressbook);   // Handles editing a contact

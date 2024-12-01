@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include "main.h"
 
-// int Search_Menu(ContactInfo *criteria);
-
 int menu()
 {
     int op;
@@ -882,7 +880,7 @@ Status Save_File(AddressBookInfo *addressbook)
     return e_success;
 }
 
-Status exit_menu()
+Status exit_menu(AddressBookInfo *addressbook)
 {
     char option;
     printf("Enter 'N' to Ignore and 'Y' to Save: ");
@@ -894,6 +892,7 @@ Status exit_menu()
 
     if (option == 'Y' || option == 'y')
     {
+        Save_File(addressbook);
         return e_success;
     }
     else if (option == 'n' || option == 'N')

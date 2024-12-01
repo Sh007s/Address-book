@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 		{
 		case 0:
 		{
-			int result = exit_menu();
+			int result = exit_menu(&addressbook);
 			if (result == e_success)
 			{
 				printf("Exiting. Data saved in address_book.csv\n");
