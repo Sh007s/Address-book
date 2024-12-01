@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "main.h"
 
-int Search_Menu(ContactInfo *criteria);
+//int Search_Menu(ContactInfo *criteria);
 
 int menu()
 {
@@ -294,7 +294,7 @@ int Perform_Search(AddressBookInfo *addressbook, ContactInfo *criteria, ContactI
     return result_count;
 }
 
-int Search_Menu(ContactInfo *criteria)
+Status Search_Menu(ContactInfo *criteria)
 {
     int op;
     do
@@ -355,7 +355,7 @@ int Search_Menu(ContactInfo *criteria)
 }
 
 // Add Contact function
-int Add_Contact(AddressBookInfo *addressbook)
+Status Add_Contact(AddressBookInfo *addressbook)
 {
     ContactInfo currentContact = {0};
     currentContact.Serial_No = addressbook->count + 1;
@@ -474,7 +474,7 @@ int Add_Contact(AddressBookInfo *addressbook)
 }
 
 // Search Contact function
-int Search_Contact(AddressBookInfo *addressbook)
+Status Search_Contact(AddressBookInfo *addressbook)
 {
     ContactInfo criteria = {0}; // Initialize search criteria
     criteria.Serial_No = 1;
@@ -490,7 +490,7 @@ int Search_Contact(AddressBookInfo *addressbook)
         memset(&criteria, 0, sizeof(criteria)); // Clear criteria for the next search
     }
 
-    return 0;
+    return e_success;
 }
 
 int quit_option()
@@ -515,12 +515,12 @@ int quit_option()
     }
 }
 
-int Edit_Contact(AddressBookInfo *addressbook)
+Status Edit_Contact(AddressBookInfo *addressbook)
 {
     if (addressbook->count == 0)
     {
         printf("No contacts available to edit.\n");
-        return -1;
+        return e_invalid;
     }
 
     // Display all contacts to select from
@@ -535,7 +535,7 @@ int Edit_Contact(AddressBookInfo *addressbook)
     if (choice == 0)
     {
         printf("Edit operation canceled.\n");
-        return 0;
+        return e_success;
     }
     int choice_select;
     printf("Enter the Contact Serial No to Edit (1 to %d) or 0 to cancel: ", addressbook->count);
@@ -552,7 +552,7 @@ int Edit_Contact(AddressBookInfo *addressbook)
             if (attempts >= 3)
             {
                 printf("Too many invalid attempts. Exiting input.\n");
-                return -1; // Exit after 3 invalid attempts
+                return e_invalid; // Exit after 3 invalid attempts
             }
             continue;
         }
@@ -560,7 +560,7 @@ int Edit_Contact(AddressBookInfo *addressbook)
         if (choice_select == 0)
         {
             printf("Edit operation canceled.\n");
-            return -1; // Exit if the user chooses to cancel
+            return e_failure; // Exit if the user chooses to cancel
         }
 
         // If the input is valid, proceed
@@ -704,10 +704,10 @@ int Edit_Contact(AddressBookInfo *addressbook)
         }
     } while (1);
 
-    return 0;
+    return e_success;
 }
 
-int Delete_Contact(AddressBookInfo *addressbook)
+Status Delete_Contact(AddressBookInfo *addressbook)
 {
     if (addressbook->count == 0)
     {
@@ -781,12 +781,12 @@ int Delete_Contact(AddressBookInfo *addressbook)
     return e_success;
 }
 
-int List_Contact(AddressBookInfo *addressbook)
+Status List_Contact(AddressBookInfo *addressbook)
 {
     if (addressbook->count == 0)
     {
         printf("Addresss Book is Empty.\n");
-        return -1;
+        return e_invalid;
     }
     printf("Contact List: \n");
     for (int i = 0; i < addressbook->count; i++)
@@ -811,10 +811,10 @@ int List_Contact(AddressBookInfo *addressbook)
         }
         printf("\n");
     }
-    return 0;
+    return e_success;
 }
 
-int Save_File(AddressBookInfo *addressbook)
+Status Save_File(AddressBookInfo *addressbook)
 {
     if (addressbook->fp == NULL)
     {
@@ -865,27 +865,26 @@ int Save_File(AddressBookInfo *addressbook)
     return e_success;
 }
 
-int exit_menu()
+Status exit_menu()
 {
     char option;
     printf("Enter 'N' to Ignore and 'Y' to Save: ");
     if (scanf(" %c", &option) != 1)
     {
         printf("Invalid Input\n");
-        return -1;
+        return e_invalid;
     }
 
     if (option == 'Y' || option == 'y')
     {
-        
-        return 1;
+        return e_success;
     }
     else if (option == 'n' || option == 'N')
     {
-        return 0;
+        return e_failure;
     }
     else
     {
-        return -1;
+        return e_invalid;
     }
 }

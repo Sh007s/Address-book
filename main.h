@@ -46,13 +46,13 @@ typedef struct
 
 // Function declarations
 int menu();                                       // Displays the main menu and returns the selected option
-int exit_menu();                                  // Handles the exit operation
-int Add_Contact(AddressBookInfo *addressbook);    // Handles adding a new contact
-int Search_Contact(AddressBookInfo *addressbook); // Handles searching for a contact
-int Edit_Contact(AddressBookInfo *addressbook);   // Handles editing a contact
-int Delete_Contact(AddressBookInfo *addressbook); // Handles deleting a contact
-int List_Contact(AddressBookInfo *addressbook);   // Handles listing all contacts
-int Save_File(AddressBookInfo *addressbook);      // Saves the contacts to a file
-int Search_Menu(ContactInfo *criteria);
+Status exit_menu();                                  // Handles the exit operation
+Status Add_Contact(AddressBookInfo *addressbook);    // Handles adding a new contact
+Status Search_Contact(AddressBookInfo *addressbook); // Handles searching for a contact
+Status Edit_Contact(AddressBookInfo *addressbook);   // Handles editing a contact
+Status Delete_Contact(AddressBookInfo *addressbook); // Handles deleting a contact
+Status List_Contact(AddressBookInfo *addressbook);   // Handles listing all contacts
+Status Save_File(AddressBookInfo *addressbook);      // Saves the contacts to a file
+Status Search_Menu(ContactInfo *criteria);
 
 #endif // MAIN_H

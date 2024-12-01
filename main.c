@@ -1,57 +1,48 @@
 #include <stdio.h>
+#include <string.h>
 #include "main.h"
+#include "file_ops.h"
 
 int main(int argc, char *argv[])
 {
 	AddressBookInfo addressbook;
+	int ret;
+
+	// Initialize address book
+	addressbook.list = NULL;
+	addressbook.count = 0;
+	addressbook.fp = NULL;
 
 	if (argc == 1)
 	{
-		printf("only ./a.out is passed\n");
-		addressbook.default_name = DEFAULT_NAME;
-		addressbook.fp = fopen(addressbook.default_name, "w");
-		if (addressbook.fp == NULL)
-		{
-			printf("Error opening file\n");
-			return e_failure;
-		}
-		printf("File name is %s\n", addressbook.default_name);
-	}
-	else if (argc == 2)
-	{
-		if ((strstr(argv[1], ".csv") == NULL))
-		{
-			printf("argv[1] is not .csv file\n");
-			printf("Usage : ./a.out address_book.csv\n");
-			return e_failure;
-		}
 
-		addressbook.fp = fopen(argv[1], "w");
-		if (addressbook.fp == NULL)
+		printf("Only ./a.out is passed\n");
+		addressbook.default_name = DEFAULT_NAME;
+		ret = load_file(&addressbook);
+
+		if (ret != e_success)
 		{
-			printf("Error opening file\n");
+			printf("Error: Unable to load or create the default file.\n");
 			return e_failure;
 		}
-		printf("File name is %s\n", argv[1]);
 	}
+
 	else
 	{
-		printf("Pass Valid Argument\n");
-		printf("Usage : ./a.out address_book.csv\n");
+		printf("Invalid arguments.\n");
+		printf("Usage:  ./address_book.csv\n");
 		return e_failure;
 	}
-
-	addressbook.list = NULL;
-	addressbook.count = 0;
 
 	int option;
 	do
 	{
 		option = menu();
 
-		if (option == -1)
+		if (option == e_invalid)
 		{
-			printf("Invalid input, please enter the number between 0 to 6\n");
+			printf("Invalid input. Please enter a number between 0 and 6.\n");
+			continue;
 		}
 
 		switch (option)
@@ -59,19 +50,19 @@ int main(int argc, char *argv[])
 		case 0:
 		{
 			int result = exit_menu();
-			if (result == 1)
+			if (result == e_success)
 			{
-				printf("Exiting Date saved in address_book.csv\n");
+				printf("Exiting. Data saved in address_book.csv\n");
 			}
-			else if (result == 0)
+			else if (result == e_failure)
 			{
-				printf("Exiting. No changes saved. \n");
+				printf("Exiting. No changes saved.\n");
 			}
-			else if (result == -1)
+			else if (result == e_invalid)
 			{
-				printf("Invalid option. Please enter 'N' or 'Y'. \n");
+				printf("Invalid option. Please enter 'N' or 'Y'.\n");
 			}
-			return e_failure;
+			break;
 		}
 		case 1:
 			if (Add_Contact(&addressbook) == e_success)
@@ -82,11 +73,15 @@ int main(int argc, char *argv[])
 		case 2:
 			if (Search_Contact(&addressbook) == e_success)
 			{
-				printf("Search function is succesfully\n");
+				printf("Contact search completed successfully.\n");
 			}
 			break;
 		case 3:
-			if (Edit_Contact(&addressbook) != e_success)
+			if (Edit_Contact(&addressbook) == e_success)
+			{
+				printf("Contact edited successfully.\n");
+			}
+			else
 			{
 				printf("Failed to edit contact.\n");
 			}
@@ -100,16 +95,17 @@ int main(int argc, char *argv[])
 		case 5:
 			if (List_Contact(&addressbook) == e_success)
 			{
+				printf("Contact list displayed successfully.\n");
 			}
 			break;
 		case 6:
 			if (Save_File(&addressbook) == e_success)
 			{
-				printf("File Saved Successfully\n");
+				printf("File saved successfully.\n");
 			}
 			break;
 		default:
-			printf("Enter the valid Option\n");
+			printf("Invalid option. Please try again.\n");
 		}
 	} while (option != 0);
 
