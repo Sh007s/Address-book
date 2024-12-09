@@ -1,57 +1,131 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "file_ops.h"
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "main.h"
 
+// Trim whitespace function
+char *trim(char *str)
+{
+    char *end;
+
+    // Trim leading space
+    while (isspace((unsigned char)*str))
+        str++;
+
+    if (*str == 0) // All spaces?
+        return str;
+
+    // Trim trailing space
+    end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end))
+        end--;
+
+    // Write new null terminator character
+    *(end + 1) = '\0';
+
+    return str;
+}
+
+// Updated load_file function
 Status load_file(AddressBookInfo *address_book)
 {
-    // Check if the default file name is set
-    if (address_book->default_name == NULL)
+    // Ensure address book is initialized
+    if (address_book == NULL)
     {
-        printf("Error: Default file name is not set.\n");
+        printf("Error: Address book is not initialized.\n");
         return e_failure;
     }
 
-    // Attempt to open the file in read mode
-    address_book->fp = fopen(address_book->default_name, "r");
-    if (address_book->fp == NULL)
+    // Allocate memory for the contact list if not already allocated
+    if (address_book->list == NULL)
     {
-        // If the file doesn't exist, create it in write mode
-        printf("File '%s' not found. Creating a new file.\n", address_book->default_name);
-        address_book->fp = fopen(address_book->default_name, "w");
-        if (address_book->fp == NULL)
+        address_book->list = malloc(sizeof(ContactInfo) * MAX_CONTACTS);
+        if (address_book->list == NULL)
         {
-            printf("Error: Unable to create the file '%s'.\n", address_book->default_name);
+            printf("Error: Memory allocation failed.\n");
             return e_failure;
         }
+    }
 
-        // Close the file after creation
-        fclose(address_book->fp);
+    // Use the Read_From_CSV function to load data
+    Read_From_CSV(address_book, address_book->default_name);
 
-        // Reopen in read/write mode
-        address_book->fp = fopen(address_book->default_name, "r+");
-        if (address_book->fp == NULL)
-        {
-            printf("Error: Unable to open the newly created file '%s'.\n", address_book->default_name);
-            return e_failure;
-        }
+    // Display the loaded contacts
+    if (address_book->count > 0)
+    {
+        printf("\nTotal contacts loaded: %d\n", address_book->count);
+        Display_Contacts(address_book);
     }
     else
     {
-        // If the file exists, reopen it in read/write mode
-        fclose(address_book->fp);
-        address_book->fp = fopen(address_book->default_name, "r+");
-        if (address_book->fp == NULL)
-        {
-            printf("Error: Unable to open the existing file '%s' in read/write mode.\n", address_book->default_name);
-            return e_failure;
-        }
+        printf("\nNo contacts loaded. The address book is empty.\n");
     }
 
-    printf("File '%s' loaded successfully.\n", address_book->default_name);
     return e_success;
+}
+
+Status Read_From_CSV(AddressBookInfo *address_book, const char *filename)
+{
+    FILE *file = fopen(filename, "r");
+    if (!file)
+    {
+        printf("Error opening file %s\n", filename);
+        return e_failure;
+    }
+
+    // Skip header line
+    char header[MAX_STRING_LENGTH];
+    fgets(header, sizeof(header), file);
+
+    char line[MAX_STRING_LENGTH];
+    while (fgets(line, sizeof(line), file))
+    {
+        ContactInfo *contact = &address_book->list[address_book->count];
+
+        // Parse CSV line
+        char *token = strtok(line, ",");
+        contact->Serial_No = atoi(token);
+
+        token = strtok(NULL, ",");
+        strcpy(contact->name, token);
+
+         token = strtok(NULL, ",");
+         strcpy(contact->phone_number[0], token);
+         contact->phone_count = 1;
+
+         token = strtok(NULL, "\n");
+         strcpy(contact->email_addresses[0], token);
+         contact->email_count = 1;
+        
+        address_book->count++;
+    }
+
+    fclose(file);
+    printf("Data loaded successfully from '%s'.\n", filename);
+}
+
+Status Display_Contacts(AddressBookInfo *address_book)
+{
+    printf("Address Book:\n");
+    for (int i = 0; i < address_book->count; i++)
+    {
+        ContactInfo *contact = &address_book->list[i];
+
+        printf("Serial No: %d\n", contact->Serial_No);
+        printf("Name: %s\n", contact->name);
+
+        printf("Phone Numbers:\n");
+        for (int j = 0; j < contact->phone_count; j++)
+        {
+            printf("  %d: %s\n", j + 1, contact->phone_number[j]);
+        }
+
+        printf("Email Addresses:\n");
+        for (int j = 0; j < contact->email_count; j++)
+        {
+            printf("  %d: %s\n", j + 1, contact->email_addresses[j]);
+        }
+        printf("\n");
+    }
 }

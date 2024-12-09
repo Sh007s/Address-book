@@ -9,9 +9,14 @@ int main(int argc, char *argv[])
 	int ret;
 
 	// Initialize address book
-	addressbook.list = NULL;
 	addressbook.count = 0;
 	addressbook.fp = NULL;
+	addressbook.list = malloc(sizeof(ContactInfo) * MAX_CONTACTS);
+	if (!addressbook.list)
+	{
+		printf("Memory allocation failed for contacts list.\n");
+		return e_failure;
+	}
 
 	if (argc == 1)
 	{
@@ -20,6 +25,28 @@ int main(int argc, char *argv[])
 		addressbook.default_name = DEFAULT_NAME;
 		ret = load_file(&addressbook);
 
+		if (ret != e_success)
+		{
+			printf("Error: Unable to load or create the default file.\n");
+			return e_failure;
+		}
+	}
+
+	else if (argc == 2)
+	{
+
+		//		printf("argv[2] is passed %s\n",argv[1]);
+		if (strstr(argv[1], ".csv") == NULL)
+		{
+			printf("%s is not .csv file\n", argv[1]);
+			printf("Usage : ./a.out address_book.csv\n");
+			return e_failure;
+		}
+
+		// Assign the filename to addressbook.default_name
+		addressbook.default_name = argv[1];
+
+		ret = load_file(&addressbook);
 		if (ret != e_success)
 		{
 			printf("Error: Unable to load or create the default file.\n");
@@ -108,10 +135,5 @@ int main(int argc, char *argv[])
 			printf("Invalid option. Please try again.\n");
 		}
 	} while (option != 0);
-
-	if (addressbook.fp != NULL)
-	{
-		fclose(addressbook.fp);
-	}
 	return e_success;
 }

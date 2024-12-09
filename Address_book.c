@@ -376,6 +376,7 @@ Status Add_Contact(AddressBookInfo *addressbook)
     currentContact.Serial_No = addressbook->count + 1;
     printf("Serial No Count : %d\n", currentContact.Serial_No);
     int op;
+    int contactAdded = 0; // Flag to track if the contact is added successfully
 
     do
     {
@@ -384,18 +385,18 @@ Status Add_Contact(AddressBookInfo *addressbook)
                (currentContact.name[0] != '\0') ? currentContact.name : "N/A",
                (currentContact.phone_number[0][0] != '\0') ? currentContact.phone_number[0] : "N/A",
                (currentContact.email_addresses[0][0] != '\0') ? currentContact.email_addresses[0] : "N/A");
+
         printf("Please select an option: ");
 
-        // Handle invalid input
-        if (scanf("%d", &op) != 1)
+        // Handle invalid input in a loop
+        while (scanf("%d", &op) != 1)
         {
             printf("Invalid input, please enter a number.\n");
-            while (getchar() != '\n')
-                ; // Clear input buffer
-            continue;
+            while (getchar() != '\n') // Clear input buffer
+                ;
+            printf("Please select an option: ");
         }
 
-        // Clear input buffer after reading valid input
         while (getchar() != '\n')
             ;
 
@@ -410,11 +411,18 @@ Status Add_Contact(AddressBookInfo *addressbook)
             printf("Enter the name for Contact %d: ", addressbook->count + 1);
             fgets(currentContact.name, sizeof(currentContact.name), stdin);
             currentContact.name[strcspn(currentContact.name, "\n")] = '\0'; // Remove newline
+
+            // Check if the name is empty
             if (strlen(currentContact.name) == 0)
             {
                 printf("Invalid Name, Name cannot be empty.\n");
             }
+            else
+            {
+                contactAdded = 1;
+            }
             break;
+
         case 2: // Enter Phone Number
             printf("Enter the phone number for Contact %d: ", addressbook->count + 1);
             fgets(currentContact.phone_number[0], sizeof(currentContact.phone_number[0]), stdin); // Fixed to use phone_number[0]
@@ -424,7 +432,12 @@ Status Add_Contact(AddressBookInfo *addressbook)
                 printf("Invalid Phone Number. Please enter a valid phone number.\n");
                 memset(currentContact.phone_number[0], 0, sizeof(currentContact.phone_number[0])); // Fixed to use phone_number[0]
             }
+            else
+            {
+                contactAdded = 1;
+            }
             break;
+
         case 3: // Enter Email ID
             printf("Enter the email ID for Contact %d: ", addressbook->count + 1);
             fgets(currentContact.email_addresses[0], sizeof(currentContact.email_addresses[0]), stdin); // Fixed to use email_addresses[0]
@@ -434,17 +447,19 @@ Status Add_Contact(AddressBookInfo *addressbook)
                 printf("Invalid Email ID. Please enter a valid email.\n");
                 memset(currentContact.email_addresses[0], 0, sizeof(currentContact.email_addresses[0])); // Fixed to use email_addresses[0]
             }
+            else
+            {
+                contactAdded = 1;
+            }
             break;
 
         default: // Invalid option
             printf("Please select a valid option.\n");
+            break;
         }
 
-        // Save contact when all fields are filled
-        // if (strlen(currentContact.name) > 0 && strlen((const char*)currentContact.phone_number) > 0 &&
-        //   strlen((const char *)currentContact.email_addresses) > 0) {
-
-        if (strlen(currentContact.name) > 0 && strlen(currentContact.phone_number[0]) > 0 && strlen(currentContact.email_addresses[0]) > 0)
+        // Only save the contact if all fields are filled and valid
+        if (contactAdded && strlen(currentContact.name) > 0 && strlen(currentContact.phone_number[0]) > 0 && strlen(currentContact.email_addresses[0]) > 0)
         {
             // **Duplicate Check**
             int duplicate = 0;
@@ -455,8 +470,6 @@ Status Add_Contact(AddressBookInfo *addressbook)
                 {
                     printf("Contact already exists.\n");
                     duplicate = 1;
-                    // Reset currentContact and return to menu
-                    //   currentContact = (ContactInfo) {0};
                     break;
                 }
             }
@@ -476,14 +489,17 @@ Status Add_Contact(AddressBookInfo *addressbook)
                 // Save the current contact
                 addressbook->list[addressbook->count] = currentContact;
                 addressbook->count++;
-                // currentContact.Serial_No = addressbook->count + 1;
+                contactAdded = 0; // Reset flag after adding the contact
 
                 // Reset currentContact for the next entry
                 currentContact = (ContactInfo){0};
                 currentContact.Serial_No = addressbook->count + 1;
+
+                printf("Contact saved successfully.\n");
             }
         }
-    } while (op != 0);
+
+    } while (op != 0); // End the loop when user chooses option 0
 
     return e_success;
 }
@@ -798,6 +814,7 @@ Status Delete_Contact(AddressBookInfo *addressbook)
 
 Status List_Contact(AddressBookInfo *addressbook)
 {
+
     if (addressbook->count == 0)
     {
         printf("Addresss Book is Empty.\n");
@@ -831,10 +848,16 @@ Status List_Contact(AddressBookInfo *addressbook)
 
 Status Save_File(AddressBookInfo *addressbook)
 {
+    // Check if the file pointer is NULL
     if (addressbook->fp == NULL)
     {
-        printf("Error: File pointer is NULL.\n");
-        return e_failure;
+        // Open the file in write mode if not already opened
+        addressbook->fp = fopen(addressbook->default_name, "w");
+        if (addressbook->fp == NULL)
+        {
+            printf("Error: Failed to open file '%s' for saving.\n", addressbook->default_name);
+            return e_failure;
+        }
     }
 
     if (addressbook->count == 0)
@@ -842,40 +865,46 @@ Status Save_File(AddressBookInfo *addressbook)
         printf("No contacts available to save.\n");
         return e_failure;
     }
+    // Write the header row
+    fprintf(addressbook->fp, "Serial No,Name,Phone Numbers,Email Addresses\n");
 
-    rewind(addressbook->fp); // Reset file pointer to start
-
+    // Write each contact's details
     for (int i = 0; i < addressbook->count; i++)
     {
-        ContactInfo *newContact = &addressbook->list[i];
+        ContactInfo *contact = &addressbook->list[i];
 
-        fprintf(addressbook->fp, "SI No : %d\n", newContact->Serial_No);
-        fprintf(addressbook->fp, "Name  : %s\n", newContact->name[0] ? newContact->name : "N/A");
-        fprintf(addressbook->fp, "Phone Number :\n ");
-        for (int i = 0; i < MAX_PHONE_NUMBERS; i++)
+        // Write Serial No and Name
+        fprintf(addressbook->fp, "%d,%s,", contact->Serial_No, contact->name[0] != '\0' ? contact->name : "N/A");
+
+        // Write phone numbers, separated by semicolons
+        for (int j = 0; j < MAX_PHONE_NUMBERS; j++)
         {
-            if (newContact->phone_number[i][0] != '\0')
+            if (contact->phone_number[j][0] != '\0')
             {
-                fprintf(addressbook->fp, "            %d : %s\n", i + 1, newContact->phone_number[i]);
+                fprintf(addressbook->fp, "%s", contact->phone_number[j]);
+                if (j < MAX_PHONE_NUMBERS - 1 && contact->phone_number[j + 1][0] != '\0')
+                {
+                    fprintf(addressbook->fp, ";");
+                }
             }
         }
-        fprintf(addressbook->fp, "Email ID    :\n");
-        for (int i = 0; i < MAX_EMAIL_IDS; i++)
+        fprintf(addressbook->fp, ",");
+
+        // Write email addresses, separated by semicolons
+        for (int k = 0; k < MAX_EMAIL_IDS; k++)
         {
-            if (newContact->email_addresses[i][0] != '\0')
+            if (contact->email_addresses[k][0] != '\0')
             {
-                fprintf(addressbook->fp, "            %d : %s\n", i + 1, newContact->email_addresses[i]);
+                fprintf(addressbook->fp, "%s", contact->email_addresses[k]);
+                if (k < MAX_EMAIL_IDS - 1 && contact->email_addresses[k + 1][0] != '\0')
+                {
+                    fprintf(addressbook->fp, ";");
+                }
             }
         }
-
-        if (ferror(addressbook->fp))
-        {
-            printf("Error: Failed to write to file.\n");
-            clearerr(addressbook->fp); // Clear the error state
-            return e_failure;
-        }
+        fprintf(addressbook->fp, "\n");
     }
-
+    fflush(addressbook->fp); // Ensure everything is written to disk
     printf("File saved successfully with %d contact(s).\n", addressbook->count);
     return e_success;
 }
@@ -890,17 +919,51 @@ Status exit_menu(AddressBookInfo *addressbook)
         return e_invalid;
     }
 
+    // Save the file if user chooses to save
     if (option == 'Y' || option == 'y')
     {
-        Save_File(addressbook);
+        if (Save_File(addressbook) == e_success)
+        {
+            // Ensure the file pointer is not NULL before closing
+            if (addressbook->fp != NULL)
+            {
+                if (fclose(addressbook->fp) != 0)
+                {
+                    printf("Error: Failed to close the file properly.\n");
+                    return e_failure;
+                }
+                printf("File Closed Successfully\n");
+            }
+            else
+            {
+                printf("Error: File pointer is NULL, cannot close file.\n");
+                return e_failure;
+            }
+        }
         return e_success;
     }
+    // If user chooses to ignore saving
     else if (option == 'n' || option == 'N')
     {
+        if (addressbook->fp != NULL)
+        {
+            if (fclose(addressbook->fp) != 0)
+            {
+                printf("Error: Failed to close the file properly.\n");
+                return e_failure;
+            }
+            printf("File closed successfully without saving.\n");
+        }
+        else
+        {
+            printf("Error: File pointer is NULL, cannot close file.\n");
+            return e_failure;
+        }
         return e_failure;
     }
     else
     {
+        printf("Invalid option selected.\n");
         return e_invalid;
     }
 }
