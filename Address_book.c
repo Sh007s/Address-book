@@ -815,101 +815,66 @@ Status Delete_Contact(AddressBookInfo *addressbook)
 
 Status List_Contact(AddressBookInfo *addressbook)
 {
-
+    // Check if address book is empty
     if (addressbook->count == 0)
     {
-        printf("Addresss Book is Empty.\n");
+        printf("Address Book is Empty.\n");
         return e_invalid;
     }
+
     printf("Contact List: \n");
+    
+    // Iterate through all contacts
     for (int i = 0; i < addressbook->count; i++)
     {
         printf("Contact %d: \n", i + 1);
         printf("Name %s\n", addressbook->list[i].name);
+        
+        // Print Email IDs
         printf("Email ID:\n");
+        int email_printed = 0;
         for (int j = 0; j < MAX_EMAIL_IDS; j++)
         {
             if (addressbook->list[i].email_addresses[j][0] != '\0')
             {
-                printf("       %s\n", addressbook->list[i].email_addresses[j]);
+                // If it's not the first email, print semicolon
+                if (email_printed > 0)
+                    printf(";");
+                
+                printf("%s", addressbook->list[i].email_addresses[j]);
+                email_printed++;
             }
         }
+        if (email_printed == 0)
+        {
+            printf("No email addresses");
+        }
+        printf("\n");
+
+        // Print Phone Numbers
         printf("Phone Number:\n");
+        int phone_printed = 0;
         for (int k = 0; k < MAX_PHONE_NUMBERS; k++)
         {
             if (addressbook->list[i].phone_number[k][0] != '\0')
             {
-                printf("       %s\n", addressbook->list[i].phone_number[k]);
+                // If it's not the first phone number, print semicolon
+                if (phone_printed > 0)
+                    printf(";");
+                
+                printf("%s", addressbook->list[i].phone_number[k]);
+                phone_printed++;
             }
         }
-        printf("\n");
+        if (phone_printed == 0)
+        {
+            printf("No phone numbers");
+        }
+        printf("\n\n");  // Extra newlines between contacts
     }
+    
     return e_success;
 }
-/*
-Status Save_File(AddressBookInfo *addressbook)
-{
-    // Check if the file pointer is NULL
-    if (addressbook->fp == NULL)
-    {
-        // Open the file in write mode if not already opened
-        addressbook->fp = fopen(addressbook->default_name, "w");
-        if (addressbook->fp == NULL)
-        {
-            printf("Error: Failed to open file '%s' for saving.\n", addressbook->default_name);
-            return e_failure;
-        }
-    }
-
-    if (addressbook->count == 0)
-    {
-        printf("No contacts available to save.\n");
-        return e_failure;
-    }
-    // Write the header row
-    fprintf(addressbook->fp, "Serial No,Name,Phone Numbers,Email Addresses\n");
-
-    // Write each contact's details
-    for (int i = 0; i < addressbook->count; i++)
-    {
-        ContactInfo *contact = &addressbook->list[i];
-
-        // Write Serial No and Name
-        fprintf(addressbook->fp, "%d,%s,", contact->Serial_No, contact->name[0] != '\0' ? contact->name : "N/A");
-
-        // Write phone numbers, separated by semicolons
-        for (int j = 0; j < MAX_PHONE_NUMBERS; j++)
-        {
-            if (contact->phone_number[j][0] != '\0')
-            {
-                fprintf(addressbook->fp, "%s", contact->phone_number[j]);
-                if (j < MAX_PHONE_NUMBERS - 1 && contact->phone_number[j + 1][0] != '\0')
-                {
-                    fprintf(addressbook->fp, ";");
-                }
-            }
-        }
-        fprintf(addressbook->fp, ",");
-
-        // Write email addresses, separated by semicolons
-        for (int k = 0; k < MAX_EMAIL_IDS; k++)
-        {
-            if (contact->email_addresses[k][0] != '\0')
-            {
-                fprintf(addressbook->fp, "%s", contact->email_addresses[k]);
-                if (k < MAX_EMAIL_IDS - 1 && contact->email_addresses[k + 1][0] != '\0')
-                {
-                    fprintf(addressbook->fp, ";");
-                }
-            }
-        }
-        fprintf(addressbook->fp, "\n");
-    }
-    fflush(addressbook->fp); // Ensure everything is written to disk
-    printf("File saved successfully with %d contact(s).\n", addressbook->count);
-    return e_success;
-}
-*/
 
 Status exit_menu(AddressBookInfo *addressbook)
 {
@@ -926,24 +891,38 @@ Status exit_menu(AddressBookInfo *addressbook)
     {
         if (Save_File(addressbook) == e_success)
         {
-            // Ensure the file pointer is not NULL before closing
+            // Ensure the file pointer is not NULL before attempting to close
             if (addressbook->fp != NULL)
             {
-                if (fclose(addressbook->fp) != 0)
-                {
-                    printf("Error: Failed to close the file properly.\n");
-                    return e_failure;
-                }
+                fclose(addressbook->fp); // Properly close the file
+                addressbook->fp = NULL;  // Set the pointer to NULL after closing
                 printf("File Closed Successfully\n");
             }
             else
             {
-                printf("Error: File pointer is NULL, cannot close file.\n");
-                return e_failure;
+                // Attempt to reopen the file if the pointer is NULL
+                addressbook->fp = fopen(addressbook->default_name, "w");
+                if (addressbook->fp == NULL)
+                {
+                    printf("Error: Failed to open the file for writing.\n");
+                    return e_failure;
+                }
+                else
+                {
+                    fclose(addressbook->fp); // Close it again if opened successfully
+                    addressbook->fp = NULL;
+                    printf("File Closed Successfully after reopening.\n");
+                }
             }
+        }
+        else
+        {
+            printf("Error: Save_File failed.\n");
+            return e_failure;
         }
         return e_success;
     }
+
     // If user chooses to ignore saving
     else if (option == 'n' || option == 'N')
     {
@@ -951,18 +930,19 @@ Status exit_menu(AddressBookInfo *addressbook)
         {
             if (fclose(addressbook->fp) != 0)
             {
-                printf("Error: Failed to close the file properly.\n");
+                printf("Error: Failed to close the file properly. Check if the file is still in use or locked.\n");
                 return e_failure;
             }
             printf("File closed successfully without saving.\n");
+            addressbook->fp = NULL; // Reset the pointer to avoid dangling references
         }
         else
         {
-            printf("Error: File pointer is NULL, cannot close file.\n");
-            return e_failure;
+            printf("No file was open. Exiting without saving changes.\n");
         }
-        return e_failure;
+        return e_success; // Exiting without saving is not an error
     }
+
     else
     {
         printf("Invalid option selected.\n");

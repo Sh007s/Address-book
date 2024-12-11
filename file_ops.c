@@ -26,7 +26,7 @@ char *trim(char *str)
 
     return str;
 }
-
+/*
 // Updated load_file function
 Status load_file(AddressBookInfo *address_book)
 {
@@ -82,7 +82,7 @@ Status Read_From_CSV(AddressBookInfo *address_book, const char *filename)
     while (fgets(line, sizeof(line), file))
     {
         ContactInfo *contact = &address_book->list[address_book->count];
- 
+
         // Parse Srtail_no
         char *token = strtok(line, ",");
         if (token)
@@ -201,6 +201,193 @@ Status Display_Contacts(AddressBookInfo *address_book)
         }
         printf("\n");
     }
+}
+*/
+
+Status load_file(AddressBookInfo *address_book)
+{
+    // Ensure address book is initialized
+    if (address_book == NULL)
+    {
+        printf("Error: Address book is not initialized.\n");
+        return e_failure;
+    }
+
+    // Allocate memory for the contact list if not already allocated
+    if (address_book->list == NULL)
+    {
+        address_book->list = malloc(sizeof(ContactInfo) * MAX_CONTACTS);
+        if (address_book->list == NULL)
+        {
+            printf("Error: Memory allocation failed.\n");
+            return e_failure;
+        }
+    }
+
+    // Use the Read_From_CSV function to load data
+    if (Read_From_CSV(address_book, address_book->default_name) == e_failure)
+    {
+        printf("Failed to load data from the file.\n");
+        return e_failure;
+    }
+
+    // Display the loaded contacts
+    if (address_book->count > 0)
+    {
+        printf("\nTotal contacts loaded: %d\n", address_book->count);
+        Display_Contacts(address_book);
+    }
+    else
+    {
+        printf("\nNo contacts loaded. The address book is empty.\n");
+    }
+
+    return e_success;
+}
+
+Status Read_From_CSV(AddressBookInfo *address_book, const char *filename)
+{
+    FILE *file = fopen(filename, "r");
+    if (!file)
+    {
+        printf("Error opening file %s\n", filename);
+        return e_failure;
+    }
+
+    // Skip header line
+    char header[MAX_STRING_LENGTH];
+    fgets(header, sizeof(header), file);
+
+    char line[MAX_STRING_LENGTH];
+    while (fgets(line, sizeof(line), file))
+    {
+        if (address_book->count >= MAX_CONTACTS)
+        {
+            printf("Error: Maximum contact limit reached.\n");
+            break;
+        }
+
+        ContactInfo *contact = &address_book->list[address_book->count];
+
+        // Parse Serial_No
+        char *token = strtok(line, ",");
+        if (token)
+        {
+            contact->Serial_No = atoi(token);
+        }
+        else
+        {
+            printf("Skipping incomplete contact: Missing Serial_No.\n");
+            continue;
+        }
+
+        // Parse Name
+        token = strtok(NULL, ",");
+        if (token)
+        {
+            strncpy(contact->name, token, NAME_LEN - 1);
+            contact->name[NAME_LEN - 1] = '\0'; // Ensure null termination
+        }
+        else
+        {
+            printf("Skipping incomplete contact: Missing Name.\n");
+            continue;
+        }
+
+        // Parse Phone Numbers
+        token = strtok(NULL, ",");
+        if (token)
+        {
+            contact->phone_count = 0;
+            char *start = token;
+            char *end;
+
+            while ((end = strstr(start, ";")) && contact->phone_count < MAX_PHONE_NUMBERS)
+            {
+                *end = '\0'; // Null-terminate the current token
+
+                // Validate and copy phone numbers
+                if (is_valid_phone_number(start))
+                {
+                    strncpy(contact->phone_number[contact->phone_count], start, PHONE_LEN - 1);
+                    contact->phone_number[contact->phone_count][PHONE_LEN - 1] = '\0'; // Ensure null termination
+                    contact->phone_count++;
+                }
+
+                start = end + 1; // Move to the next token after the delimiter
+            }
+
+            // Process the last token (if any) after the final semicolon
+            if (*start != '\0' && contact->phone_count < MAX_PHONE_NUMBERS)
+            {
+                if (is_valid_phone_number(start))
+                {
+                    strncpy(contact->phone_number[contact->phone_count], start, PHONE_LEN - 1);
+                    contact->phone_number[contact->phone_count][PHONE_LEN - 1] = '\0'; // Ensure null termination
+                    contact->phone_count++;
+                }
+            }
+        }
+
+        // Parse Email Addresses
+        token = strtok(NULL, "\n");
+        if (token)
+        {
+            printf("Processing email field: '%s'\n", token);
+            contact->email_count = 0;
+            char *email_token = strtok(token, ";");
+
+            while (email_token && contact->email_count < MAX_EMAIL_IDS)
+            {
+                email_token = trim(email_token); // Trim whitespace if needed
+                printf("Email Token: '%s'\n", email_token);
+                if (strlen(email_token) > 0)
+                {
+                    strncpy(contact->email_addresses[contact->email_count], email_token, EMAIL_LEN - 1);
+                    contact->email_addresses[contact->email_count][EMAIL_LEN - 1] = '\0'; // Null-terminate
+                    contact->email_count++;
+                }
+                email_token = strtok(NULL, ";");
+            }
+            printf("Total email addresses processed: %d\n", contact->email_count);
+        }
+        else
+        {
+            printf("Warning: Missing email field for contact.\n");
+        }
+
+        address_book->count++;
+    }
+
+    fclose(file);
+    printf("Data loaded successfully from '%s'.\n", filename);
+    return e_success;
+}
+
+Status Display_Contacts(AddressBookInfo *address_book)
+{
+    printf("Address Book:\n");
+    for (int i = 0; i < address_book->count; i++)
+    {
+        ContactInfo *contact = &address_book->list[i];
+
+        printf("Serial No: %d\n", contact->Serial_No);
+        printf("Name: %s\n", contact->name);
+
+        printf("Phone Numbers:\n");
+        for (int j = 0; j < contact->phone_count; j++)
+        {
+            printf("  %d: %s\n", j + 1, contact->phone_number[j]);
+        }
+
+        printf("Email Addresses:\n");
+        for (int j = 0; j < contact->email_count; j++)
+        {
+            printf("  %d: %s\n", j + 1, contact->email_addresses[j]);
+        }
+        printf("\n");
+    }
+    return e_success;
 }
 
 Status Save_File(AddressBookInfo *addressbook)
