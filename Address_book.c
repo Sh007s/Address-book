@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "main.h"
+#include "file_ops.h"
 
 int menu()
 {
@@ -845,7 +846,7 @@ Status List_Contact(AddressBookInfo *addressbook)
     }
     return e_success;
 }
-
+/*
 Status Save_File(AddressBookInfo *addressbook)
 {
     // Check if the file pointer is NULL
@@ -908,6 +909,7 @@ Status Save_File(AddressBookInfo *addressbook)
     printf("File saved successfully with %d contact(s).\n", addressbook->count);
     return e_success;
 }
+*/
 
 Status exit_menu(AddressBookInfo *addressbook)
 {

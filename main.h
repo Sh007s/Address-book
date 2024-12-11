@@ -54,6 +54,7 @@ typedef struct
 } AddressBookInfo;
 
 // Function declarations
+int is_valid_phone_number(const char *phone);
 int menu();                                          // Displays the main menu and returns the selected option
 Status exit_menu(AddressBookInfo *addressbook);      // Handles the exit operation
 Status Add_Contact(AddressBookInfo *addressbook);    // Handles adding a new contact
@@ -61,9 +62,8 @@ Status Search_Contact(AddressBookInfo *addressbook); // Handles searching for a 
 Status Edit_Contact(AddressBookInfo *addressbook);   // Handles editing a contact
 Status Delete_Contact(AddressBookInfo *addressbook); // Handles deleting a contact
 Status List_Contact(AddressBookInfo *addressbook);   // Handles listing all contacts
-Status Save_File(AddressBookInfo *addressbook);      // Saves the contacts to a file
 Status Search_Menu(ContactInfo *criteria);
 Status Read_From_CSV(AddressBookInfo *addressbook, const char *filename);
 Status Display_Contacts(AddressBookInfo *addressbook);
-// print_address_book(AddressBook *address_book)
+
 #endif // MAIN_H
