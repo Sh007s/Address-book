@@ -10,16 +10,16 @@
 
 // Macro definitions
 #define DEFAULT_NAME "address_book.csv"
-#define NAME_LEN        100
-#define NUMBER_LEN       15
-#define EMAIL_ID_LEN     50
-#define MAX_RESULTS      100
+#define NAME_LEN 100
+#define NUMBER_LEN 15
+#define EMAIL_ID_LEN 50
+#define MAX_RESULTS 100
 #define MAX_PHONE_NUMBERS 5
-#define MAX_EMAIL_IDS     5
-#define MAX_CONTACTS     1000
-#define MAX_STRING_LENGTH 50
-#define PHONE_LEN         20
-#define EMAIL_LEN         50
+#define MAX_EMAIL_IDS 5
+#define MAX_CONTACTS 1000
+#define MAX_STRING_LENGTH 100
+#define PHONE_LEN 20
+#define EMAIL_LEN 256
 
 // Enum for function statuses
 typedef enum
@@ -65,5 +65,7 @@ Status List_Contact(AddressBookInfo *addressbook);   // Handles listing all cont
 Status Search_Menu(ContactInfo *criteria);
 Status Read_From_CSV(AddressBookInfo *addressbook, const char *filename);
 Status Display_Contacts(AddressBookInfo *addressbook);
+Status DummyContact(AddressBookInfo *addressbook);
+Status Dummy_Contact_info(AddressBookInfo *addressbook);
 
 #endif // MAIN_H

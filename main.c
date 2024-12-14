@@ -23,12 +23,16 @@ int main(int argc, char *argv[])
 
 		printf("Only ./a.out is passed\n");
 		addressbook.default_name = DEFAULT_NAME;
-		ret = load_file(&addressbook);
-
-		if (ret != e_success)
+		if (DummyContact(&addressbook) == e_success)
 		{
-			printf("Error: Unable to load or create the default file.\n");
-			return e_failure;
+			printf("Dummy contacts created successfully!\n");
+			printf("In Default CSV File.\n");
+			return e_success;
+		}
+		else
+		{
+			printf("Failed to created the Dummyc contact\n");
+			return e_failure;		
 		}
 	}
 

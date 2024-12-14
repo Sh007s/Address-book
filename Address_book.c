@@ -20,6 +20,83 @@ int menu()
     return op;
 }
 
+Status Dummy_Contact_info(AddressBookInfo *addressbook)
+{
+    Dummy_Contact_info(addressbook);
+    printf("Passing the Dummy Contact\n");
+    if (DummyContact(addressbook) == e_success)
+    {
+        for (int i = 0; i < addressbook->count; i++)
+        {
+            printf("Serial No: %d\n", addressbook->list[i].Serial_No);
+            printf("Name: %s\n", addressbook->list[i].name);
+
+            printf("Phone Numbers:\n");
+            for (int j = 0; j < addressbook->list[i].phone_count; j++)
+            {
+                printf("  %s\n", addressbook->list[i].phone_number[j]);
+            }
+
+            printf("Email Addresses:\n");
+            for (int j = 0; j < addressbook->list[i].email_count; j++)
+            {
+                printf("  %s\n", addressbook->list[i].email_addresses[j]);
+            }
+            printf("\n");
+        }
+
+        // Free allocated memory
+        free(addressbook->list);
+    }
+    else
+    {
+        printf("Failed to create dummy contacts.\n");
+    }
+    return e_success;
+}
+
+Status DummyContact(AddressBookInfo *addressbook)
+{
+    if (addressbook == NULL)
+    {
+        printf("DEBUG: AddressBook pointer is not created or initialized.\n");
+        return e_invalid; // Return error if the address book pointer is NULL
+    }
+
+    addressbook->count = 3;
+    addressbook->list = (ContactInfo *)malloc(sizeof(ContactInfo) * addressbook->count);
+    if (addressbook->list == NULL)
+    {
+        printf("ERROR: Memory allocation for addressbook->list failed.\n");
+        return e_failure;
+    }
+
+    // Populate dummy data
+    for (int i = 0; i < addressbook->count; i++)
+    {
+        snprintf(addressbook->list[i].name, NAME_LEN, "Contact%d", i + 1);
+        addressbook->list[i].Serial_No = i + 1;
+
+        addressbook->list[i].phone_count = 2; // Example: Each contact has 2 phone numbers
+        for (int j = 0; j < addressbook->list[i].phone_count; j++)
+        {
+            snprintf(addressbook->list[i].phone_number[j], NUMBER_LEN, "123456789%d", j + i);
+        }
+
+        addressbook->list[i].email_count = 2; // Example: Each contact has 2 email addresses
+        for (int j = 0; j < addressbook->list[i].email_count; j++)
+        {
+            snprintf(addressbook->list[i].email_addresses[j], EMAIL_ID_LEN, "contact%d_%d@example.com", i + 1, j + 1);
+        }
+    }
+    int result = Save_File(addressbook);
+    if (result == e_success)
+    {
+        printf("Dunny c0ntact saved\n");
+    }
+    return e_success;
+}
+
 int is_valid_phone_number(const char *phone)
 {
     int i = 0;
@@ -823,13 +900,14 @@ Status List_Contact(AddressBookInfo *addressbook)
     }
 
     printf("Contact List: \n");
-    
+
     // Iterate through all contacts
     for (int i = 0; i < addressbook->count; i++)
     {
         printf("Contact %d: \n", i + 1);
+        printf("Serail No %d\n",addressbook->list[i].Serial_No);
         printf("Name %s\n", addressbook->list[i].name);
-        
+
         // Print Email IDs
         printf("Email ID:\n");
         int email_printed = 0;
@@ -840,7 +918,7 @@ Status List_Contact(AddressBookInfo *addressbook)
                 // If it's not the first email, print semicolon
                 if (email_printed > 0)
                     printf(";");
-                
+
                 printf("%s", addressbook->list[i].email_addresses[j]);
                 email_printed++;
             }
@@ -861,7 +939,7 @@ Status List_Contact(AddressBookInfo *addressbook)
                 // If it's not the first phone number, print semicolon
                 if (phone_printed > 0)
                     printf(";");
-                
+
                 printf("%s", addressbook->list[i].phone_number[k]);
                 phone_printed++;
             }
@@ -870,9 +948,9 @@ Status List_Contact(AddressBookInfo *addressbook)
         {
             printf("No phone numbers");
         }
-        printf("\n\n");  // Extra newlines between contacts
+        printf("\n\n"); // Extra newlines between contacts
     }
-    
+
     return e_success;
 }
 
