@@ -67,5 +67,6 @@ Status Read_From_CSV(AddressBookInfo *addressbook, const char *filename);
 Status Display_Contacts(AddressBookInfo *addressbook);
 Status DummyContact(AddressBookInfo *addressbook);
 Status Dummy_Contact_info(AddressBookInfo *addressbook);
+Status diplay_contact_addressbook(AddressBookInfo *addressbook);
 
 #endif // MAIN_H

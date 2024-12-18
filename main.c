@@ -20,7 +20,6 @@ int main(int argc, char *argv[])
 
 	if (argc == 1)
 	{
-
 		printf("Only ./a.out is passed\n");
 		addressbook.default_name = DEFAULT_NAME;
 		if (DummyContact(&addressbook) == e_success)
@@ -61,7 +60,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		printf("Invalid arguments.\n");
-		printf("Usage: ./a.out ./address_book.csv\n");
+		printf("Usage:  ./address_book.csv\n");
 		return e_failure;
 	}
 

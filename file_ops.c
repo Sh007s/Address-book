@@ -58,11 +58,11 @@ Status load_file(AddressBookInfo *address_book)
     if (address_book->count > 0)
     {
         printf("\nTotal contacts loaded: %d\n", address_book->count);
-        Display_Contacts(address_book);
+    //    Display_Contacts(address_book);
     }
     else
     {
-        printf("\nNo contacts loaded. The address book is empty.\n");
+  //      printf("\nNo contacts loaded. The address book is empty.\n");
     }
 
     return e_success;
