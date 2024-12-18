@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		printf("Invalid arguments.\n");
-		printf("Usage:  ./address_book.csv\n");
+		printf("Usage: ./a.out ./address_book.csv\n");
 		return e_failure;
 	}
 
