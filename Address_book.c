@@ -816,124 +816,6 @@ Status Edit_Contact(AddressBookInfo *addressbook)
     return e_success;
 }
 
-// Status Delete_Contact(AddressBookInfo *addressbook)
-// {
-//     if (addressbook->count == 0)
-//     {
-//         printf("No contacts available to delete.\n");
-//         return -1;
-//     }
-
-//     printf("\n####### Address Book #######\n");
-//     printf("########## Search Contact to Delete by ##########\n");
-
-//     // Display all contacts to select from
-//     printf("Select contact to Delete:\n");
-//     // for (int i = 0; i < addressbook->count; i++)
-//     // {
-//     //     printf("%d. %s\n", i + 1, addressbook->list[i].name);
-//     // }
-//     diplay_contact_addressbook(addressbook);
-//     // Get user choice
-//     int choice = quit_option();
-//     if (choice == 0)
-//     {
-//         printf("Edit operation canceled.\n");
-//         return e_success;
-//     }
-//     int choice_select;
-//     printf("Enter the Contact Serial No to Edit (1 to %d) or 0 to cancel: ", addressbook->count);
-//     int attempts = 0; // Counter for invalid attempts
-//     do
-//     {
-//         if (scanf("%d", &choice_select) != 1 || choice_select < 0 || choice_select > addressbook->count)
-//         {
-//             attempts++; // Increment the counter on invalid input
-//             printf("Invalid Input. You have %d attempt(s) left.\n", 3 - attempts);
-//             while (getchar() != '\n')
-//                 ; // Clear the input buffer
-//             if (attempts >= 3)
-//             {
-//                 printf("Too many invalid attempts. Exiting input.\n");
-//                 return e_invalid; // Exit after 3 invalid attempts
-//             }
-//             continue;
-//         }
-
-//         if (choice_select == 0)
-//         {
-//             printf("Edit operation canceled.\n");
-//             return e_failure; // Exit if the user chooses to cancel
-//         }
-
-//         // If the input is valid, proceed
-//         printf("You selected contact #%d.\n", choice_select);
-//         break; // Exit the loop on valid input
-//     } while (1);
-
-//     ContactInfo criteria = {0};       // Initialize search criteria
-//     ContactInfo results[MAX_RESULTS]; // Array to hold search results
-//     int result_count;
-
-//     while (Search_Menu(&criteria))
-//     {
-//         result_count = Perform_Search(addressbook, &criteria, results, MAX_RESULTS);
-//         if (result_count > 0)
-//         {
-//             printf("Search Results:\n");
-//             display_results(results, result_count, &criteria); // Show results if any
-
-//             // Ask user to select a contact from the results to delete
-//             printf("Enter the result serial number to delete (1 to %d) or 0 to cancel: ", result_count);
-//             int choice;
-//             if (scanf("%d", &choice) != 1 || choice < 0 || choice > result_count)
-//             {
-//                 printf("Invalid input. Operation canceled.\n");
-//                 return e_invalid;
-//             }
-
-//             if (choice == 0)
-//             {
-//                 printf("Delete operation canceled.\n");
-//                 return e_success;
-//             }
-
-//             // Confirm deletion
-//             printf("Are you sure you want to delete this contact? (y/n): ");
-//             char confirmation;
-//             scanf(" %c", &confirmation);
-//             if (confirmation != 'y' && confirmation != 'Y')
-//             {
-//                 printf("Delete operation canceled.\n");
-//                 return e_success;
-//             }
-
-//             // Find the actual index of the selected contact in the address book
-//             int contact_index = results[choice - 1].Serial_No - 1;
-
-//             // Perform deletion by shifting contacts
-//             for (int i = contact_index; i < addressbook->count - 1; i++)
-//             {
-//                 addressbook->list[i] = addressbook->list[i + 1]; // Shift contacts left
-//             }
-
-//             // Decrease the contact count
-//             addressbook->count--;
-
-//             return e_success;
-//         }
-//         else
-//         {
-//             printf("No contacts found matching the search criteria.\n");
-//         }
-
-//         // Reset criteria for the next search
-//         memset(&criteria, 0, sizeof(criteria));
-//     }
-
-//     return e_success;
-// }
-
 Status Delete_Contact(AddressBookInfo *addressbook)
 {
     if (addressbook->count == 0)
@@ -944,7 +826,12 @@ Status Delete_Contact(AddressBookInfo *addressbook)
 
     // Display all contacts
     printf("\n####### Address Book #######\n");
-    diplay_contact_addressbook(addressbook);
+    //   diplay_contact_addressbook(addressbook);
+
+    for ( int i = 0; i < addressbook->count; i++)
+    {
+        printf("%d. %s\n",addressbook->list[i].Serial_No, addressbook->list[i].name);
+    }
 
     // Get user input for the contact to delete
     int serial_number;
@@ -983,8 +870,6 @@ Status Delete_Contact(AddressBookInfo *addressbook)
     printf("Contact #%d has been successfully deleted.\n", serial_number);
     return e_success;
 }
-
-
 
 Status diplay_contact_addressbook(AddressBookInfo *addressbook)
 {

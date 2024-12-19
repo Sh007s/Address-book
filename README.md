@@ -5,6 +5,7 @@
 - List all contacts.
 - Save and exit with data persistence.
 
+- delete contact based on Serial Number
 ## Getting Started
 
 ### Prerequisites
@@ -20,7 +21,8 @@
     gcc main.c address_book.c -o address_book
 
 3. Run the program:
-    ./address_book
+    ./address_book    for Dummy Contact
+    ./address_book address_book.csv for run the program 
 
 
 ## Contact
