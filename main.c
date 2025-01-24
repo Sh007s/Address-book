@@ -3,11 +3,13 @@
 #include "main.h"
 #include "file_ops.h"
 
+int isSave = 0;
+
 int main(int argc, char *argv[])
 {
 	AddressBookInfo addressbook;
 	int ret;
-
+	
 	// Initialize address book
 	addressbook.count = 0;
 	addressbook.fp = NULL;
@@ -31,7 +33,7 @@ int main(int argc, char *argv[])
 		else
 		{
 			printf("Failed to created the Dummyc contact\n");
-			return e_failure;		
+			return e_failure;
 		}
 	}
 
@@ -83,6 +85,7 @@ int main(int argc, char *argv[])
 			if (result == e_success)
 			{
 				printf("Exiting. Data saved in address_book.csv\n");
+				isSave = 0;
 			}
 			else if (result == e_failure)
 			{
@@ -132,6 +135,7 @@ int main(int argc, char *argv[])
 			if (Save_File(&addressbook) == e_success)
 			{
 				printf("File saved successfully.\n");
+				isSave = 1;
 			}
 			break;
 		default:

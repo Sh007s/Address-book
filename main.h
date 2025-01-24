@@ -21,6 +21,8 @@
 #define PHONE_LEN 20
 #define EMAIL_LEN 256
 
+extern int isSave;
+
 // Enum for function statuses
 typedef enum
 {

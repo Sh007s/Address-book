@@ -828,9 +828,9 @@ Status Delete_Contact(AddressBookInfo *addressbook)
     printf("\n####### Address Book #######\n");
     //   diplay_contact_addressbook(addressbook);
 
-    for ( int i = 0; i < addressbook->count; i++)
+    for (int i = 0; i < addressbook->count; i++)
     {
-        printf("%d. %s\n",addressbook->list[i].Serial_No, addressbook->list[i].name);
+        printf("%d. %s\n", addressbook->list[i].Serial_No, addressbook->list[i].name);
     }
 
     // Get user input for the contact to delete
@@ -953,6 +953,7 @@ Status List_Contact(AddressBookInfo *addressbook)
 Status exit_menu(AddressBookInfo *addressbook)
 {
     char option;
+    // int isSave;
     printf("Enter 'N' to Ignore and 'Y' to Save: ");
     if (scanf(" %c", &option) != 1)
     {
@@ -963,38 +964,45 @@ Status exit_menu(AddressBookInfo *addressbook)
     // Save the file if user chooses to save
     if (option == 'Y' || option == 'y')
     {
-        if (Save_File(addressbook) == e_success)
+        if (isSave == 1)
         {
-            // Ensure the file pointer is not NULL before attempting to close
-            if (addressbook->fp != NULL)
-            {
-                fclose(addressbook->fp); // Properly close the file
-                addressbook->fp = NULL;  // Set the pointer to NULL after closing
-                printf("File Closed Successfully\n");
-            }
-            else
-            {
-                // Attempt to reopen the file if the pointer is NULL
-                addressbook->fp = fopen(addressbook->default_name, "w");
-                if (addressbook->fp == NULL)
-                {
-                    printf("Error: Failed to open the file for writing.\n");
-                    return e_failure;
-                }
-                else
-                {
-                    fclose(addressbook->fp); // Close it again if opened successfully
-                    addressbook->fp = NULL;
-                    printf("File Closed Successfully after reopening.\n");
-                }
-            }
+            printf("Already File is File \n");
         }
         else
         {
-            printf("Error: Save_File failed.\n");
-            return e_failure;
+            if (Save_File(addressbook) == e_success)
+            {
+                // Ensure the file pointer is not NULL before attempting to close
+                if (addressbook->fp != NULL)
+                {
+                    fclose(addressbook->fp); // Properly close the file
+                    addressbook->fp = NULL;  // Set the pointer to NULL after closing
+                    printf("File Closed Successfully\n");
+                }
+                else
+                {
+                    // Attempt to reopen the file if the pointer is NULL
+                    addressbook->fp = fopen(addressbook->default_name, "w");
+                    if (addressbook->fp == NULL)
+                    {
+                        printf("Error: Failed to open the file for writing.\n");
+                        return e_failure;
+                    }
+                    else
+                    {
+                        fclose(addressbook->fp); // Close it again if opened successfully
+                        addressbook->fp = NULL;
+                        printf("File Closed Successfully after reopening.\n");
+                    }
+                }
+            }
+            else
+            {
+                printf("Error: Save_File failed.\n");
+                return e_failure;
+            }
+            return e_success;
         }
-        return e_success;
     }
 
     // If user chooses to ignore saving
@@ -1022,4 +1030,5 @@ Status exit_menu(AddressBookInfo *addressbook)
         printf("Invalid option selected.\n");
         return e_invalid;
     }
+    //   }
 }
