@@ -2,6 +2,8 @@
 #include "main.h"
 #include "file_ops.h"
 
+int dummysave = 0;
+
 int menu()
 {
     int op;
@@ -89,11 +91,11 @@ Status DummyContact(AddressBookInfo *addressbook)
             snprintf(addressbook->list[i].email_addresses[j], EMAIL_ID_LEN, "contact%d_%d@example.com", i + 1, j + 1);
         }
     }
-    int result = Save_File(addressbook);
-    if (result == e_success)
-    {
-        printf("Dunny c0ntact saved\n");
-    }
+    // int result = Save_File(addressbook);
+    // if (result == e_success)
+    // {
+    //     printf("Dunny contact saved\n");
+    // }
     return e_success;
 }
 
@@ -964,7 +966,7 @@ Status exit_menu(AddressBookInfo *addressbook)
     // Save the file if user chooses to save
     if (option == 'Y' || option == 'y')
     {
-        if (isSave == 1)
+        if (isSave == 1 || dummysave == 1)
         {
             printf("Already File is File \n");
         }

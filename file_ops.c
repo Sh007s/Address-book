@@ -4,6 +4,8 @@
 #include <ctype.h>
 #include "main.h"
 
+//int dummysave = 0;
+
 // Trim whitespace function
 char *trim(char *str)
 {
@@ -227,6 +229,12 @@ Status Display_Contacts(AddressBookInfo *address_book)
 
 Status Save_File(AddressBookInfo *addressbook)
 {
+     if (addressbook->count == 0)
+    {
+        printf("No contacts available to save.\n");
+        return e_failure;
+    }
+
     // Check if the file pointer is NULL
     if (addressbook->fp == NULL)
     {
@@ -239,11 +247,6 @@ Status Save_File(AddressBookInfo *addressbook)
         }
     }
 
-    if (addressbook->count == 0)
-    {
-        printf("No contacts available to save.\n");
-        return e_failure;
-    }
     // Write the header row
     fprintf(addressbook->fp, "Serial No,Name,Phone Numbers,Email Addresses\n");
 
@@ -284,6 +287,9 @@ Status Save_File(AddressBookInfo *addressbook)
         fprintf(addressbook->fp, "\n");
     }
     fflush(addressbook->fp); // Ensure everything is written to disk
+ //   fclose(addressbook->fp);
     printf("File saved successfully with %d contact(s).\n", addressbook->count);
+    dummysave = 1;
     return e_success;
 }
+

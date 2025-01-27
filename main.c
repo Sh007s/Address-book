@@ -1,15 +1,17 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "main.h"
 #include "file_ops.h"
 
 int isSave = 0;
+// int dummysave = 0;
 
 int main(int argc, char *argv[])
 {
 	AddressBookInfo addressbook;
 	int ret;
-	
+
 	// Initialize address book
 	addressbook.count = 0;
 	addressbook.fp = NULL;
@@ -27,8 +29,7 @@ int main(int argc, char *argv[])
 		if (DummyContact(&addressbook) == e_success)
 		{
 			printf("Dummy contacts created successfully!\n");
-			printf("In Default CSV File.\n");
-			return e_success;
+			printf("In \"%s\" Default CSV File.\n", addressbook.default_name);
 		}
 		else
 		{
@@ -86,6 +87,7 @@ int main(int argc, char *argv[])
 			{
 				printf("Exiting. Data saved in address_book.csv\n");
 				isSave = 0;
+				dummysave = 0;
 			}
 			else if (result == e_failure)
 			{
@@ -136,6 +138,7 @@ int main(int argc, char *argv[])
 			{
 				printf("File saved successfully.\n");
 				isSave = 1;
+				dummysave = 1;
 			}
 			break;
 		default:

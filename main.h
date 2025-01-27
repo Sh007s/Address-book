@@ -22,6 +22,7 @@
 #define EMAIL_LEN 256
 
 extern int isSave;
+extern int dummysave;
 
 // Enum for function statuses
 typedef enum
